@@ -2100,11 +2100,6 @@ begin
 end;
 
 {new}
-procedure EmitEndingStub;
-begin
-end;
-
-{new}
 const EndingStubSize=$2139;
   StartStubSize=$4fb;
   EndStubSize=$8f7;
@@ -2364,125 +2359,9 @@ var InjectionSize,CountJumps,Opcode,Value,Index,PEEXECodeSize,PEEXESectionVirtua
 begin
  EmitStubCode;
  PEEXECodeStart:=OutputCodeDataSize;
- LastOutputCodeValue:=locNone;
- PC:=0;
- CountJumps:=0;
  WriteOutputCode;
 end;
 
 begin
- StringCopy(Keywords[SymBEGIN],'BEGIN               ');
- StringCopy(Keywords[SymEND],'END                 ');
- StringCopy(Keywords[SymIF],'IF                  ');
- StringCopy(Keywords[SymTHEN],'THEN                ');
- StringCopy(Keywords[SymELSE],'ELSE                ');
- StringCopy(Keywords[SymWHILE],'WHILE               ');
- StringCopy(Keywords[SymDO],'DO                  ');
- StringCopy(Keywords[SymCASE],'CASE                ');
- StringCopy(Keywords[SymREPEAT],'REPEAT              ');
- StringCopy(Keywords[SymUNTIL],'UNTIL               ');
- StringCopy(Keywords[SymFOR],'FOR                 ');
- StringCopy(Keywords[SymTO],'TO                  ');
- StringCopy(Keywords[SymDOWNTO],'DOWNTO              ');
- StringCopy(Keywords[SymNOT],'NOT                 ');
- StringCopy(Keywords[SymDIV],'DIV                 ');
- StringCopy(Keywords[SymMOD],'MOD                 ');
- StringCopy(Keywords[SymAND],'AND                 ');
- StringCopy(Keywords[SymOR],'OR                  ');
- StringCopy(Keywords[SymCONST],'CONST               ');
- StringCopy(Keywords[SymVAR],'VAR                 ');
- StringCopy(Keywords[SymTYPE],'TYPE                ');
- StringCopy(Keywords[SymARRAY],'ARRAY               ');
- StringCopy(Keywords[SymOF],'OF                  ');
- StringCopy(Keywords[SymPACKED],'PACKED              ');
- StringCopy(Keywords[SymRECORD],'RECORD              ');
- StringCopy(Keywords[SymPROGRAM],'PROGRAM             ');
- StringCopy(Keywords[SymFORWARD],'FORWARD             ');
- StringCopy(Keywords[SymHALT],'HALT                ');
- StringCopy(Keywords[SymFUNC],'FUNCTION            ');
- StringCopy(Keywords[SymPROC],'PROCEDURE           ');
-
- Types[TypeINT].Size:=4;
- Types[TypeINT].Kind:=KindSIMPLE;
- Types[TypeCHAR].Size:=4;
- Types[TypeCHAR].Kind:=KindSIMPLE;
- Types[TypeBOOL].Size:=4;
- Types[TypeBOOL].Kind:=KindSIMPLE;
- Types[TypeSTR].Size:=0;
- Types[TypeSTR].Kind:=KindSIMPLE;
- TypePosition:=4;
-
- SymbolNameList[-1]:=0;
- CurrentLevel:=-1;
- IdentifierPosition:=0;
-
- EnterSymbol('FALSE               ',IdCONST,TypeBOOL);
- Identifiers[IdentifierPosition].Value:=ord(false);
-
- EnterSymbol('TRUE                ',IdCONST,TypeBOOL);
- Identifiers[IdentifierPosition].Value:=ord(true);
-
- EnterSymbol('MAXINT              ',IdCONST,TypeINT);
- Identifiers[IdentifierPosition].Value:=2147483647;
-
- EnterSymbol('INTEGER             ',IdTYPE,TypeINT);
- EnterSymbol('CHAR                ',IdTYPE,TypeCHAR);
- EnterSymbol('BOOLEAN             ',IdTYPE,TypeBOOL);
-
- EnterSymbol('CHR                 ',IdFUNC,TypeCHAR);
- Identifiers[IdentifierPosition].FunctionLevel:=-1;
- Identifiers[IdentifierPosition].FunctionAddress:=FunCHR;
- Identifiers[IdentifierPosition].Inside:=false;
-
- EnterSymbol('ORD                 ',IdFUNC,TypeINT);
- Identifiers[IdentifierPosition].FunctionLevel:=-1;
- Identifiers[IdentifierPosition].FunctionAddress:=FunORD;
- Identifiers[IdentifierPosition].Inside:=false;
-
- EnterSymbol('WRITE               ',IdFUNC,0);
- Identifiers[IdentifierPosition].FunctionLevel:=-1;
- Identifiers[IdentifierPosition].FunctionAddress:=FunWRITE;
-
- EnterSymbol('WRITELN             ',IdFUNC,0);
- Identifiers[IdentifierPosition].FunctionLevel:=-1;
- Identifiers[IdentifierPosition].FunctionAddress:=FunWRITELN;
-
- EnterSymbol('READ                ',IdFUNC,0);
- Identifiers[IdentifierPosition].FunctionLevel:=-1;
- Identifiers[IdentifierPosition].FunctionAddress:=FunREAD;
-
- EnterSymbol('READLN              ',IdFUNC,0);
- Identifiers[IdentifierPosition].FunctionLevel:=-1;
- Identifiers[IdentifierPosition].FunctionAddress:=FunREADLN;
-
- EnterSymbol('EOF                 ',IdFUNC,TypeBOOL);
- Identifiers[IdentifierPosition].FunctionLevel:=-1;
- Identifiers[IdentifierPosition].FunctionAddress:=FunEOF;
- Identifiers[IdentifierPosition].Inside:=false;
-
- EnterSymbol('EOLN                ',IdFUNC,TypeBOOL);
- Identifiers[IdentifierPosition].FunctionLevel:=-1;
- Identifiers[IdentifierPosition].FunctionAddress:=FunEOFLN;
- Identifiers[IdentifierPosition].Inside:=false;
-
- SymbolNameList[0]:=0;
- CurrentLevel:=0;
-
- CurrentLine:=1;
- CurrentColumn:=0;
-
- ReadChar;
- GetSymbol;
- IsLabeled:=true;
- CodePosition:=0;
- LastOpcode:=-1;
- StackPosition:=4;
- Expect(SymPROGRAM);
- Expect(TokIdent);
- Expect(TokSemi);
- EmitOpcode(OPJmp,0);
- Block(0);
- EmitOpcode2(OPHalt);
- Check(TokPeriod);
  AssembleAndLink;
 end.
