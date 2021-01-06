@@ -1,0 +1,30 @@
+#IncludeRegexLine: ^[ 	]*[#%][ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+/Users/a.mamaev/Work/CourseProject/A-Bauman-BTPC-macOS/rtl2pas/main.cpp
+iostream
+-
+vector
+-
+fstream
+-
+cstring
+-
+stdint.h
+-
+stdlib.h
+-
+mach/machine.h
+-
+mach/vm_prot.h
+-
+mach/machine/thread_status.h
+-
+architecture/byte_order.h
+-
+

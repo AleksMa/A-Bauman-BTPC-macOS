@@ -1,0 +1,3 @@
+/Users/a.mamaev/Work/CourseProject/A-Bauman-BTPC-macOS/rtl2pas/cmake-build-debug/CMakeFiles/rebuild_cache.dir
+/Users/a.mamaev/Work/CourseProject/A-Bauman-BTPC-macOS/rtl2pas/cmake-build-debug/CMakeFiles/edit_cache.dir
+/Users/a.mamaev/Work/CourseProject/A-Bauman-BTPC-macOS/rtl2pas/cmake-build-debug/CMakeFiles/rtltopas.dir

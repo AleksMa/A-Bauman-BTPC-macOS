@@ -10,8 +10,12 @@ string NOP = "$90";
 
 bool isExecutable(FILE *f) {
 
-    if ('M' == fgetc(f) && 'Z' == fgetc(f))
+    fgetc(f);
+    if ('E' == fgetc(f) &&
+        'L' == fgetc(f) &&
+        'F' == fgetc(f)) {
         return true;
+    }
 
     rewind(f);
     return  0xcf == fgetc(f) &&
@@ -24,8 +28,7 @@ int main() {
 
     FILE *f = fopen(
             "/Users/a.mamaev/Work/CourseProject/A-Bauman-BTPC-macOS/rtl64",
-            //"/home/anthony/Dropbox/bero/x32/bero32",
-            //"/home/anthony/Dropbox/bero/btpc.exe",
+            //"/Users/a.mamaev/Work/CourseProject/A-Bauman-BTPC-macOS/rtl64linux",
             "rb");
 
     if (isExecutable(f)) {
