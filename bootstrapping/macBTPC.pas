@@ -2053,12 +2053,12 @@ begin
  end;
 end;
 
-type TOutputCodeString=array[1..20] of char;
+type TOutputCodeString=array[1..255] of char;
 
 procedure OutputCodeString(s:TOutputCodeString);
 var i:integer;
 begin
- for i:=1 to 20 do begin
+ for i:=1 to 255 do begin
   EmitChar(s[i]);
  end;
 end;
