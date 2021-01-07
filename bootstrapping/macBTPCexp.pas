@@ -2850,10 +2850,9 @@ begin
 }
 
   {testing}
-  EmitByte($90);
-  EmitByte($90);
-  EmitByte($90);
-  EmitByte($90);
+  for i:=1 to 1000 do begin
+    EmitByte($90);
+  end;
 
   {new}
   EmitEndingStub;
