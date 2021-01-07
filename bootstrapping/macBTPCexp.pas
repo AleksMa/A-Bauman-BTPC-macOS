@@ -2113,22 +2113,63 @@ begin
 end;
 
 {new}
-const EndingStubSize=$2142;
-  StartStubSize=$4fb;
-  EndStubSize=$8f7;
-  ElfHdrShoff_val0=$4b0;
-  TextPhdrFilesz_val0=$317;
-  TxtSectHdrSize_val0=$317;
-  ShSectHdrOffs_val0=$487;
-  SymSHdrOffs_val0=$630;
-  StrSHdrOffs_val0=$a80;
-  OffsElfHdrShoff=$28;
-  OffsTextPHdrFilesz=$98;
-  OffsTextPHdrMemsz=$a0;
-  OffsTextSectSize=$550;
-  OffsShstrSectOffs=$588;
-  OffsSymtabSectOffs=$5c8;
-  OffsStrtabSectOffs=$608;
+const EndingStubSize=5297;
+  StartStubSize=$10ef;
+  EndStubSize=$14eb;
+  {__TEXT}
+  OffsSegTextVMSize=$88;
+  OffsSegTextFileSize=$98;
+  ValSegTextVMSize=$1000;
+  ValSegTextFileSize=$1000;
+  {__text}
+  OffsSectTextSize=$D8;
+  ValSectTextSize=$3AE;
+  {__DATA}
+  OffsSegDataVMAddr=$118;
+  OffsSegDataOffs=$128;
+  ValSegDataVMAddr=$1000;
+  ValSegDataOffs=$1000;
+  {__data}
+  OffsSectDataVMAddr=$168;
+  OffsSectDataOffs=$178;
+  ValSectDataVMAddr=$1000;
+  ValSectDataOffs=$1000;
+  {__LINKEDIT}
+  OffsSegLinkVMAddr=$1B0;
+  OffsSegLinkOffs=$1C0;
+  ValSegLinkVMAddr=$2000;
+  ValSegLinkOffs=$2000;
+  {SYMTAB_OFFSETS}
+  OffsSymTabOffs=$1E8;
+  OffsStrTabOffs=$1F0;
+  ValSymTabOffs=$2000;
+  ValStrTabOffs=$2260;
+  {SYMTAB_DATA}
+  OffsData0=$21E8;
+  OffsData1=$21F8;
+  OffsData2=$2208;
+  OffsData3=$2218;
+  OffsData4=$2228;
+  OffsData5=$2238;
+  ValData0=$1000;
+  ValData1=$1074;
+  ValData2=$1075;
+  ValData3=$1076;
+  ValData4=$1077;
+  ValData5=$10BF;
+  // ElfHdrShoff_val0=$4b0;
+  // TextPhdrFilesz_val0=$317;
+  // TxtSectHdrSize_val0=$317;
+  // ShSectHdrOffs_val0=$487;
+  // SymSHdrOffs_val0=$630;
+  // StrSHdrOffs_val0=$a80;
+  // OffsElfHdrShoff=$28;
+  // OffsTextPHdrFilesz=$98;
+  // OffsTextPHdrMemsz=$a0;
+  // OffsTextSectSize=$550;
+  // OffsShstrSectOffs=$588;
+  // OffsSymtabSectOffs=$5c8;
+  // OffsStrtabSectOffs=$608;
 
 
 const locNone=0;
@@ -2352,408 +2393,409 @@ var
    PEEXESectionAlignment,PEEXECodeStart:integer;
 begin
  EmitStubCode;
- PEEXECodeStart:=OutputCodeDataSize;
- LastOutputCodeValue:=locNone;
- PC:=0;
- CountJumps:=0;
+ 
+//  PEEXECodeStart:=OutputCodeDataSize;
+//  LastOutputCodeValue:=locNone;
+//  PC:=0;
+//  CountJumps:=0;
 
- while PC<CodePosition do begin
-  Opcode:=Code[PC];
-  Value:=Code[PC+1];
-  Code[PC]:=OutputCodeDataSize;
-  case Opcode of
-   OPAdd:begin
-    OCPopEAX;
-    EmitByte($48); EmitByte($01); EmitByte($04); EmitByte($24); (* ADD DWORD PTR {ESP},EAX *)
-    LastOutputCodeValue:=locNone;
-   end;
-   OPNeg:begin
-    OCNegDWordPtrESP;
-   end;
-   OPMul:begin
-    OCPopEBX;
-    OCPopEAX;
-    OCIMulEBX;
-    OCPushEAX;
-   end;
-   OPDivD:begin
-    OCPopEBX;
-    OCPopEAX;
-    OCXorEDXEDX;
-    OCIDIVEBX;
-    OCPushEAX;
-   end;
-   OPRemD:begin
-    OCPopEBX;
-    OCPopEAX;
-    OCXorEDXEDX;
-    OCIDIVEBX;
-    OCPushEDX;
-   end;
-   OPDiv2:begin
-    EmitByte($48); EmitByte($d1); EmitByte($3c); EmitByte($24); (* SAR DWORD PTR {ESP},1 *)
-    LastOutputCodeValue:=locNone;
-   end;
-   OPRem2:begin
-    OCPopEAX;
-    EmitByte($48); EmitByte($8b); EmitByte($d8); { MOV EBX,EAX }
-    {?}
-    {eax even => eax=0; eax odd => eax=1}
-    EmitByte($25); EmitByte($01); EmitByte($00); EmitByte($00); EmitByte($80); { AND EAX,$80000001 }
-    {7905 = jns $+0x7 = 2 itself + 5 next bytes}
-    {790a = jns $+0xC = 2 itself + 10 next bytes}
-    EmitByte($79); EmitByte($0a); { JNS +$0xC }
-    EmitByte($48); EmitByte($ff); EmitByte($c8); { DEC EAX }
-    EmitByte($48); EmitByte($83); EmitByte($c8); EmitByte($fe); { OR EAX,BYTE -$02 }
-    EmitByte($48); EmitByte($ff); EmitByte($c0); { INC EAX }
-    LastOutputCodeValue:=locNone;
-    OCIMulEBX;
-    OCPushEAX;
-   end;
-   OPEqlI:begin
-    OCPopEBX;
-    OCPopEAX;
-    OCCmpEAXEBX;
-    EmitByte($0f); EmitByte($94); EmitByte($d0); // SETE AL
-    LastOutputCodeValue:=locNone;
-    OCMovzxEAXAL;
-    OCPushEAX;
-   end;
-   OPNEqI:begin
-    OCPopEBX;
-    OCPopEAX;
-    OCCmpEAXEBX;
-    EmitByte($0f); EmitByte($95); EmitByte($d0); // SETNE AL
-    LastOutputCodeValue:=locNone;
-    OCMovzxEAXAL;
-    OCPushEAX;
-   end;
-   OPLssI:begin
-    OCPopEBX;
-    OCPopEAX;
-    OCCmpEAXEBX;
-    EmitByte($0f); EmitByte($9c); EmitByte($d0); // SETL AL
-    LastOutputCodeValue:=locNone;
-    OCMovzxEAXAL;
-    OCPushEAX;
-   end;
-   OPLeqI:begin
-    OCPopEBX;
-    OCPopEAX;
-    OCCmpEAXEBX;
-    EmitByte($0f); EmitByte($9e); EmitByte($d0); // SETLE AL
-    LastOutputCodeValue:=locNone;
-    OCMovzxEAXAL;
-    OCPushEAX;
-   end;
-   OPGtrI:begin
-    OCPopEBX;
-    OCPopEAX;
-    OCCmpEAXEBX;
-    EmitByte($0f); EmitByte($9f); EmitByte($d0); // SETG AL
-    LastOutputCodeValue:=locNone;
-    OCMovzxEAXAL;
-    OCPushEAX;
-   end;
-   OPGEqi:begin
-    OCPopEBX;
-    OCPopEAX;
-    OCCmpEAXEBX;
-    EmitByte($0f); EmitByte($9d); EmitByte($d0); // SETGE AL
-    LastOutputCodeValue:=locNone;
-    OCMovzxEAXAL;
-    OCPushEAX;
-   end;
-   OPDupl:begin
-    EmitByte($ff); EmitByte($34); EmitByte($24); // PUSH DWORD PTR [ESP]
-    LastOutputCodeValue:=locNone;
-   end;
-   OPSwap:begin
-    OCPopEBX;
-    OCPopEAX;
-    EmitByte($53); { PUSH EBX }
-    LastOutputCodeValue:=locNone;
-    OCPushEAX;
-   end;
-   OPAndB:begin
-    OCPopEAX;
-    OCTestEAXEAX;
-    {originally it was skipping 3 bytes + 2 itself. now 4 bytes + 2 itself}
-    OCJNZJNE0x06;
-    OCMovDWordPtrESPEAX;
-    LastOutputCodeValue:=locNone;
-   end;
-   OPOrB:begin
-    OCPopEAX;
-    EmitByte($48); EmitByte($83); EmitByte($f8); EmitByte($01);  { CMP EAX,1 }
-    LastOutputCodeValue:=locNone;
-    OCJNZJNE0x06;
-    OCMovDWordPtrESPEAX;
-    LastOutputCodeValue:=locNone;
-   end;
-   OPLoad:begin
-    OCPopEAX;
-    EmitByte($ff); EmitByte($30); { PUSH DWORD PTR [EAX] }
-    LastOutputCodeValue:=locNone;
-   end;
-   OPStore:begin
-    OCPopEBX;
-    OCPopEAX;
-    OCMovDWordPtrEBXEAX;
-   end;
-   OPHalt:begin
-    OCJmpDWordPtrESIOfs(0);
-   end;
-   OPWrI:begin
-    OCCallDWordPtrESIOfs(16);
-   end;
-   OPWrC:begin
-    OCCallDWordPtrESIOfs(8);
-   end;
-   OPWrL:begin
-    OCCallDWordPtrESIOfs(24);
-   end;
-   OPRdI:begin
-    OCPopEBX;
-    OCCallDWordPtrESIOfs(40);
-    OCMovDWordPtrEBXEAX;
-   end;
-   OPRdC:begin
-    OCPopEBX;
-    OCCallDWordPtrESIOfs(32);
-    OCMovzxEAXAL;
-    OCMovDWordPtrEBXEAX;
-   end;
-   OPRdL:begin
-    OCCallDWordPtrESIOfs(48);
-   end;
-   OPEOF:begin
-    OCCallDWordPtrESIOfs(56);
-    OCPushEAX;
-   end;
-   OPEOL:begin
-    OCCallDWordPtrESIOfs(64);
-    OCPushEAX;
-   end;
-   OPLdC:begin
-    if (Value>=-128) and (Value<=127) then begin
-     EmitByte($6a); EmitByte(Value); { PUSH BYTE Value }
-    end else begin
-     EmitByte($68); EmitInt32(Value); { PUSH DWORD Value }
-    end;
-    LastOutputCodeValue:=locNone;
-    PC:=PC+1;
-   end;
-   OPLdA:begin
-    Value:=Value*2;
-    if Value=0 then begin
-     EmitByte($48); EmitByte($89); EmitByte($e8); { MOV EAX,EBP }
-    end else if (Value>=-128) and (Value<=127) then begin
-     EmitByte($48); EmitByte($8d); EmitByte($45); EmitByte(Value); { LEA EAX,[EBP+BYTE Value] }
-    end else begin
-     EmitByte($48); EmitByte($8d); EmitByte($85); EmitInt32(Value); { LEA EAX,[EBP+DWORD Value] }
-    end;
-    LastOutputCodeValue:=locNone;
-    OCPushEAX;
-    PC:=PC+1;
-   end;
-   OPLdLA:begin
-    Value:=Value*2;
-    if Value=0 then begin
-     EmitByte($48); EmitByte($89); EmitByte($e0); { MOV EAX,ESP }
-    end else if (Value>=-128) and (Value<=127) then begin
-     EmitByte($48); EmitByte($8d); EmitByte($44); EmitByte($24); EmitByte(Value);
-      { LEA EAX,[ESP+BYTE Value] }
-    end else begin
-     EmitByte($48); EmitByte($8d); EmitByte($84); EmitByte($24); EmitInt32(Value);
-      { LEA EAX,[ESP+DWORD Value] }
-    end;
-    LastOutputCodeValue:=locNone;
-    OCPushEAX;
-    PC:=PC+1;
-   end;
-   OPLdL:begin
-    Value:=Value*2;
-    if Value=0 then begin
-     OCMovEAXDWordPtrESP;
-    end else if (Value>=-128) and (Value<=127) then begin
-     EmitByte($48); EmitByte($8b); EmitByte($44); EmitByte($24); EmitByte(Value);
-      { MOV EAX,DWORD PTR [ESP+BYTE Value] }
-    end else begin
-     EmitByte($48); EmitByte($8b); EmitByte($84); EmitByte($24); EmitInt32(Value);
-      { MOV EAX,DWORD PTR [ESP+DWORD Value] }
-    end;
-    OCPushEAX;
-    PC:=PC+1;
-   end;
-   OPLdG:begin
-    Value:=Value*2;
-    if (Value>=-128) and (Value<=127) then begin
-     EmitByte($48); EmitByte($8b); EmitByte($45); EmitByte(Value); { MOV EAX,DWORD PTR [EBP+BYTE Value] }
-    end else begin
-     EmitByte($48); EmitByte($8b); EmitByte($85); EmitInt32(Value);
-      { MOV EAX,DWORD PTR [EBP+DWORD Value] }
-    end;
-    LastOutputCodeValue:=locNone;
-    OCPushEAX;
-    PC:=PC+1;
-   end;
-   OPStL:begin
-    OCPopEAX;
-    Value:=Value-4;
-    Value:=Value*2;
-    if Value=0 then begin
-     EmitByte($48); EmitByte($89); EmitByte($04); EmitByte($24); { MOV DWORD PTR [ESP],EAX }
-    end else if (Value>=-128) and (Value<=127) then begin
-     EmitByte($48); EmitByte($89); EmitByte($44); EmitByte($24); EmitByte(Value);
-      { MOV DWORD PTR [ESP+BYTE Value],EAX }
-    end else begin
-     EmitByte($48); EmitByte($89); EmitByte($84); EmitByte($24); EmitInt32(Value);
-      { MOV EAX,DWORD PTR [ESP+DWORD Value] }
-    end;
-    LastOutputCodeValue:=locNone;
-    PC:=PC+1;
-   end;
-   OPStG:begin
-    OCPopEAX;
-    Value:=Value*2;
-    if (Value>=-128) and (Value<=127) then begin
-     EmitByte($48); EmitByte($89); EmitByte($45); EmitByte(Value); { MOV DWORD PTR [EBP+BYTE Value],EAX }
-    end else begin
-     EmitByte($48); EmitByte($89); EmitByte($85); EmitInt32(Value);
-      {mistake in comment: MOV EAX,DWORD PTR [EBP+DWORD Value] }
-     {!}{changed to actual code: mov    QWORD PTR [rbp+0x12345678],rax}
-    end;
-    LastOutputCodeValue:=locNone;
-    PC:=PC+1;
-   end;
-   OPMove:begin
-    OCXChgEDXESI;
-    EmitByte($5f); { POP EDI }
-    LastOutputCodeValue:=locNone;
-    OCPopESI;
-    Value:=Value*2;
-    OCMovECXImm(Value);
-    OCCLD;
-    OCREPMOVSB;
-    OCXChgEDXESI;
-    PC:=PC+1;
-   end;
-   OPCopy:begin
-    OCXChgEDXESI;
-    OCPopESI;
-    Value:=Value*2;
-    OCMovECXImm(Value);
-    EmitByte($48); EmitByte($29); EmitByte($cc); { SUB ESP,ECX }
-    EmitByte($48); EmitByte($89); EmitByte($e7); { MOV EDI,ESP }
-    LastOutputCodeValue:=locNone;
-    OCCLD;
-    OCREPMOVSB;
-    OCXChgEDXESI;
-    PC:=PC+1;
-   end;
-   OPAddC:begin
-    if (Value>=-128) and (Value<=127) then begin
-     EmitByte($48); EmitByte($83); EmitByte($04); EmitByte($24); EmitByte(Value);
-      { ADD DWORD PTR [ESP],BYTE Value }
-    end else begin
-     EmitByte($48); EmitByte($81); EmitByte($04); EmitByte($24); EmitInt32(Value);
-      { ADD DWORD PTR [ESP],DWORD Value }
-    end;
-    LastOutputCodeValue:=locNone;
-    PC:=PC+1;
-   end;
-   OPMulC:begin
-    if Value=(-1) then begin
-     OCNegDWordPtrESP;
-    end else if (Value>=-128) and (Value<=127) then begin
-     OCPopEAX;
-     EmitByte($48); EmitByte($6b); EmitByte($c0); EmitByte(Value); { IMUL EAX,BYTE s }
-     LastOutputCodeValue:=locNone;
-     OCPushEAX;
-    end else begin
-     OCPopEAX;
-     EmitByte($48); EmitByte($69); EmitByte($c0); EmitInt32(Value); { IMUL EAX,DWORD s }
-     LastOutputCodeValue:=locNone;
-     OCPushEAX;
-    end;
-    PC:=PC+1;
-   end;
-   OPJmp:begin
-    if Value<>(PC+2) then begin
-     CountJumps:=CountJumps+1;
-     EmitByte($e9); { JMP Value }
-     JumpTable[CountJumps]:=OutputCodeDataSize+1;
-     EmitInt32(Value);
-    end;
-    PC:=PC+1;
-    LastOutputCodeValue:=locNone;
-   end;
-   OPJZ:begin
-    CountJumps:=CountJumps+1;
-    OCPopEAX;
-    OCTestEAXEAX;
-    EmitByte($0f); EmitByte($84); { JZ Value }
-    JumpTable[CountJumps]:=OutputCodeDataSize+1;
-    EmitInt32(Value);
-    LastOutputCodeValue:=locNone;
-    PC:=PC+1;
-   end;
-   OPCall:begin
-    CountJumps:=CountJumps+1;
-    EmitByte($e8); { CALL Value }
-    JumpTable[CountJumps]:=OutputCodeDataSize+1;
-    EmitInt32(Value);
-    LastOutputCodeValue:=locNone;
-    PC:=PC+1;
-   end;
-   OPAdjS:begin
-    Value:=Value*2;
-    if Value>0 then begin
-     if (Value>=-128) and (Value<=127) then begin
-      EmitByte($48); EmitByte($83); EmitByte($c4); EmitByte(Value); { ADD ESP,BYTE Value }
-     end else begin
-      EmitByte($48); EmitByte($81); EmitByte($c4); EmitInt32(Value); { ADD ESP,DWORD Value }
-     end;
-    end else if Value<0 then begin
-     Value:=-Value;
-     if (Value>=-128) and (Value<=127) then begin
-      EmitByte($48); EmitByte($83); EmitByte($ec); EmitByte(Value); { SUB ESP,BYTE Value }
-     end else begin
-      EmitByte($48); EmitByte($81); EmitByte($ec); EmitInt32(Value); { SUB ESP,DWORD Value }
-     end;
-    end;
-    LastOutputCodeValue:=locNone;
-    PC:=PC+1;
-   end;
-   OPExit:begin
-    Value:=Value-4;
-    Value:=Value*2;
-    if Value>0 then begin
-     {EmitByte($c2); EmitInt16(Value); }{ RET Value }
-     {add rsp, int16_Value, 0, 0; RET}
-     EmitByte($c2); EmitInt16(Value);
-     {EmitByte($48); EmitByte($48); EmitByte($48); EmitByte($48); EmitInt16(Value); EmitInt16(0);
-     EmitByte($c3);}
-    end else if Value=0 then begin
-     EmitByte($c3); { RET }
-    end else begin
-     Error(145);
-    end;
-    LastOutputCodeValue:=locNone;
-    PC:=PC+1;
-   end;
-  end;
-  PC:=PC+1;
- end;
+//  while PC<CodePosition do begin
+//   Opcode:=Code[PC];
+//   Value:=Code[PC+1];
+//   Code[PC]:=OutputCodeDataSize;
+//   case Opcode of
+//    OPAdd:begin
+//     OCPopEAX;
+//     EmitByte($48); EmitByte($01); EmitByte($04); EmitByte($24); (* ADD DWORD PTR {ESP},EAX *)
+//     LastOutputCodeValue:=locNone;
+//    end;
+//    OPNeg:begin
+//     OCNegDWordPtrESP;
+//    end;
+//    OPMul:begin
+//     OCPopEBX;
+//     OCPopEAX;
+//     OCIMulEBX;
+//     OCPushEAX;
+//    end;
+//    OPDivD:begin
+//     OCPopEBX;
+//     OCPopEAX;
+//     OCXorEDXEDX;
+//     OCIDIVEBX;
+//     OCPushEAX;
+//    end;
+//    OPRemD:begin
+//     OCPopEBX;
+//     OCPopEAX;
+//     OCXorEDXEDX;
+//     OCIDIVEBX;
+//     OCPushEDX;
+//    end;
+//    OPDiv2:begin
+//     EmitByte($48); EmitByte($d1); EmitByte($3c); EmitByte($24); (* SAR DWORD PTR {ESP},1 *)
+//     LastOutputCodeValue:=locNone;
+//    end;
+//    OPRem2:begin
+//     OCPopEAX;
+//     EmitByte($48); EmitByte($8b); EmitByte($d8); { MOV EBX,EAX }
+//     {?}
+//     {eax even => eax=0; eax odd => eax=1}
+//     EmitByte($25); EmitByte($01); EmitByte($00); EmitByte($00); EmitByte($80); { AND EAX,$80000001 }
+//     {7905 = jns $+0x7 = 2 itself + 5 next bytes}
+//     {790a = jns $+0xC = 2 itself + 10 next bytes}
+//     EmitByte($79); EmitByte($0a); { JNS +$0xC }
+//     EmitByte($48); EmitByte($ff); EmitByte($c8); { DEC EAX }
+//     EmitByte($48); EmitByte($83); EmitByte($c8); EmitByte($fe); { OR EAX,BYTE -$02 }
+//     EmitByte($48); EmitByte($ff); EmitByte($c0); { INC EAX }
+//     LastOutputCodeValue:=locNone;
+//     OCIMulEBX;
+//     OCPushEAX;
+//    end;
+//    OPEqlI:begin
+//     OCPopEBX;
+//     OCPopEAX;
+//     OCCmpEAXEBX;
+//     EmitByte($0f); EmitByte($94); EmitByte($d0); // SETE AL
+//     LastOutputCodeValue:=locNone;
+//     OCMovzxEAXAL;
+//     OCPushEAX;
+//    end;
+//    OPNEqI:begin
+//     OCPopEBX;
+//     OCPopEAX;
+//     OCCmpEAXEBX;
+//     EmitByte($0f); EmitByte($95); EmitByte($d0); // SETNE AL
+//     LastOutputCodeValue:=locNone;
+//     OCMovzxEAXAL;
+//     OCPushEAX;
+//    end;
+//    OPLssI:begin
+//     OCPopEBX;
+//     OCPopEAX;
+//     OCCmpEAXEBX;
+//     EmitByte($0f); EmitByte($9c); EmitByte($d0); // SETL AL
+//     LastOutputCodeValue:=locNone;
+//     OCMovzxEAXAL;
+//     OCPushEAX;
+//    end;
+//    OPLeqI:begin
+//     OCPopEBX;
+//     OCPopEAX;
+//     OCCmpEAXEBX;
+//     EmitByte($0f); EmitByte($9e); EmitByte($d0); // SETLE AL
+//     LastOutputCodeValue:=locNone;
+//     OCMovzxEAXAL;
+//     OCPushEAX;
+//    end;
+//    OPGtrI:begin
+//     OCPopEBX;
+//     OCPopEAX;
+//     OCCmpEAXEBX;
+//     EmitByte($0f); EmitByte($9f); EmitByte($d0); // SETG AL
+//     LastOutputCodeValue:=locNone;
+//     OCMovzxEAXAL;
+//     OCPushEAX;
+//    end;
+//    OPGEqi:begin
+//     OCPopEBX;
+//     OCPopEAX;
+//     OCCmpEAXEBX;
+//     EmitByte($0f); EmitByte($9d); EmitByte($d0); // SETGE AL
+//     LastOutputCodeValue:=locNone;
+//     OCMovzxEAXAL;
+//     OCPushEAX;
+//    end;
+//    OPDupl:begin
+//     EmitByte($ff); EmitByte($34); EmitByte($24); // PUSH DWORD PTR [ESP]
+//     LastOutputCodeValue:=locNone;
+//    end;
+//    OPSwap:begin
+//     OCPopEBX;
+//     OCPopEAX;
+//     EmitByte($53); { PUSH EBX }
+//     LastOutputCodeValue:=locNone;
+//     OCPushEAX;
+//    end;
+//    OPAndB:begin
+//     OCPopEAX;
+//     OCTestEAXEAX;
+//     {originally it was skipping 3 bytes + 2 itself. now 4 bytes + 2 itself}
+//     OCJNZJNE0x06;
+//     OCMovDWordPtrESPEAX;
+//     LastOutputCodeValue:=locNone;
+//    end;
+//    OPOrB:begin
+//     OCPopEAX;
+//     EmitByte($48); EmitByte($83); EmitByte($f8); EmitByte($01);  { CMP EAX,1 }
+//     LastOutputCodeValue:=locNone;
+//     OCJNZJNE0x06;
+//     OCMovDWordPtrESPEAX;
+//     LastOutputCodeValue:=locNone;
+//    end;
+//    OPLoad:begin
+//     OCPopEAX;
+//     EmitByte($ff); EmitByte($30); { PUSH DWORD PTR [EAX] }
+//     LastOutputCodeValue:=locNone;
+//    end;
+//    OPStore:begin
+//     OCPopEBX;
+//     OCPopEAX;
+//     OCMovDWordPtrEBXEAX;
+//    end;
+//    OPHalt:begin
+//     OCJmpDWordPtrESIOfs(0);
+//    end;
+//    OPWrI:begin
+//     OCCallDWordPtrESIOfs(16);
+//    end;
+//    OPWrC:begin
+//     OCCallDWordPtrESIOfs(8);
+//    end;
+//    OPWrL:begin
+//     OCCallDWordPtrESIOfs(24);
+//    end;
+//    OPRdI:begin
+//     OCPopEBX;
+//     OCCallDWordPtrESIOfs(40);
+//     OCMovDWordPtrEBXEAX;
+//    end;
+//    OPRdC:begin
+//     OCPopEBX;
+//     OCCallDWordPtrESIOfs(32);
+//     OCMovzxEAXAL;
+//     OCMovDWordPtrEBXEAX;
+//    end;
+//    OPRdL:begin
+//     OCCallDWordPtrESIOfs(48);
+//    end;
+//    OPEOF:begin
+//     OCCallDWordPtrESIOfs(56);
+//     OCPushEAX;
+//    end;
+//    OPEOL:begin
+//     OCCallDWordPtrESIOfs(64);
+//     OCPushEAX;
+//    end;
+//    OPLdC:begin
+//     if (Value>=-128) and (Value<=127) then begin
+//      EmitByte($6a); EmitByte(Value); { PUSH BYTE Value }
+//     end else begin
+//      EmitByte($68); EmitInt32(Value); { PUSH DWORD Value }
+//     end;
+//     LastOutputCodeValue:=locNone;
+//     PC:=PC+1;
+//    end;
+//    OPLdA:begin
+//     Value:=Value*2;
+//     if Value=0 then begin
+//      EmitByte($48); EmitByte($89); EmitByte($e8); { MOV EAX,EBP }
+//     end else if (Value>=-128) and (Value<=127) then begin
+//      EmitByte($48); EmitByte($8d); EmitByte($45); EmitByte(Value); { LEA EAX,[EBP+BYTE Value] }
+//     end else begin
+//      EmitByte($48); EmitByte($8d); EmitByte($85); EmitInt32(Value); { LEA EAX,[EBP+DWORD Value] }
+//     end;
+//     LastOutputCodeValue:=locNone;
+//     OCPushEAX;
+//     PC:=PC+1;
+//    end;
+//    OPLdLA:begin
+//     Value:=Value*2;
+//     if Value=0 then begin
+//      EmitByte($48); EmitByte($89); EmitByte($e0); { MOV EAX,ESP }
+//     end else if (Value>=-128) and (Value<=127) then begin
+//      EmitByte($48); EmitByte($8d); EmitByte($44); EmitByte($24); EmitByte(Value);
+//       { LEA EAX,[ESP+BYTE Value] }
+//     end else begin
+//      EmitByte($48); EmitByte($8d); EmitByte($84); EmitByte($24); EmitInt32(Value);
+//       { LEA EAX,[ESP+DWORD Value] }
+//     end;
+//     LastOutputCodeValue:=locNone;
+//     OCPushEAX;
+//     PC:=PC+1;
+//    end;
+//    OPLdL:begin
+//     Value:=Value*2;
+//     if Value=0 then begin
+//      OCMovEAXDWordPtrESP;
+//     end else if (Value>=-128) and (Value<=127) then begin
+//      EmitByte($48); EmitByte($8b); EmitByte($44); EmitByte($24); EmitByte(Value);
+//       { MOV EAX,DWORD PTR [ESP+BYTE Value] }
+//     end else begin
+//      EmitByte($48); EmitByte($8b); EmitByte($84); EmitByte($24); EmitInt32(Value);
+//       { MOV EAX,DWORD PTR [ESP+DWORD Value] }
+//     end;
+//     OCPushEAX;
+//     PC:=PC+1;
+//    end;
+//    OPLdG:begin
+//     Value:=Value*2;
+//     if (Value>=-128) and (Value<=127) then begin
+//      EmitByte($48); EmitByte($8b); EmitByte($45); EmitByte(Value); { MOV EAX,DWORD PTR [EBP+BYTE Value] }
+//     end else begin
+//      EmitByte($48); EmitByte($8b); EmitByte($85); EmitInt32(Value);
+//       { MOV EAX,DWORD PTR [EBP+DWORD Value] }
+//     end;
+//     LastOutputCodeValue:=locNone;
+//     OCPushEAX;
+//     PC:=PC+1;
+//    end;
+//    OPStL:begin
+//     OCPopEAX;
+//     Value:=Value-4;
+//     Value:=Value*2;
+//     if Value=0 then begin
+//      EmitByte($48); EmitByte($89); EmitByte($04); EmitByte($24); { MOV DWORD PTR [ESP],EAX }
+//     end else if (Value>=-128) and (Value<=127) then begin
+//      EmitByte($48); EmitByte($89); EmitByte($44); EmitByte($24); EmitByte(Value);
+//       { MOV DWORD PTR [ESP+BYTE Value],EAX }
+//     end else begin
+//      EmitByte($48); EmitByte($89); EmitByte($84); EmitByte($24); EmitInt32(Value);
+//       { MOV EAX,DWORD PTR [ESP+DWORD Value] }
+//     end;
+//     LastOutputCodeValue:=locNone;
+//     PC:=PC+1;
+//    end;
+//    OPStG:begin
+//     OCPopEAX;
+//     Value:=Value*2;
+//     if (Value>=-128) and (Value<=127) then begin
+//      EmitByte($48); EmitByte($89); EmitByte($45); EmitByte(Value); { MOV DWORD PTR [EBP+BYTE Value],EAX }
+//     end else begin
+//      EmitByte($48); EmitByte($89); EmitByte($85); EmitInt32(Value);
+//       {mistake in comment: MOV EAX,DWORD PTR [EBP+DWORD Value] }
+//      {!}{changed to actual code: mov    QWORD PTR [rbp+0x12345678],rax}
+//     end;
+//     LastOutputCodeValue:=locNone;
+//     PC:=PC+1;
+//    end;
+//    OPMove:begin
+//     OCXChgEDXESI;
+//     EmitByte($5f); { POP EDI }
+//     LastOutputCodeValue:=locNone;
+//     OCPopESI;
+//     Value:=Value*2;
+//     OCMovECXImm(Value);
+//     OCCLD;
+//     OCREPMOVSB;
+//     OCXChgEDXESI;
+//     PC:=PC+1;
+//    end;
+//    OPCopy:begin
+//     OCXChgEDXESI;
+//     OCPopESI;
+//     Value:=Value*2;
+//     OCMovECXImm(Value);
+//     EmitByte($48); EmitByte($29); EmitByte($cc); { SUB ESP,ECX }
+//     EmitByte($48); EmitByte($89); EmitByte($e7); { MOV EDI,ESP }
+//     LastOutputCodeValue:=locNone;
+//     OCCLD;
+//     OCREPMOVSB;
+//     OCXChgEDXESI;
+//     PC:=PC+1;
+//    end;
+//    OPAddC:begin
+//     if (Value>=-128) and (Value<=127) then begin
+//      EmitByte($48); EmitByte($83); EmitByte($04); EmitByte($24); EmitByte(Value);
+//       { ADD DWORD PTR [ESP],BYTE Value }
+//     end else begin
+//      EmitByte($48); EmitByte($81); EmitByte($04); EmitByte($24); EmitInt32(Value);
+//       { ADD DWORD PTR [ESP],DWORD Value }
+//     end;
+//     LastOutputCodeValue:=locNone;
+//     PC:=PC+1;
+//    end;
+//    OPMulC:begin
+//     if Value=(-1) then begin
+//      OCNegDWordPtrESP;
+//     end else if (Value>=-128) and (Value<=127) then begin
+//      OCPopEAX;
+//      EmitByte($48); EmitByte($6b); EmitByte($c0); EmitByte(Value); { IMUL EAX,BYTE s }
+//      LastOutputCodeValue:=locNone;
+//      OCPushEAX;
+//     end else begin
+//      OCPopEAX;
+//      EmitByte($48); EmitByte($69); EmitByte($c0); EmitInt32(Value); { IMUL EAX,DWORD s }
+//      LastOutputCodeValue:=locNone;
+//      OCPushEAX;
+//     end;
+//     PC:=PC+1;
+//    end;
+//    OPJmp:begin
+//     if Value<>(PC+2) then begin
+//      CountJumps:=CountJumps+1;
+//      EmitByte($e9); { JMP Value }
+//      JumpTable[CountJumps]:=OutputCodeDataSize+1;
+//      EmitInt32(Value);
+//     end;
+//     PC:=PC+1;
+//     LastOutputCodeValue:=locNone;
+//    end;
+//    OPJZ:begin
+//     CountJumps:=CountJumps+1;
+//     OCPopEAX;
+//     OCTestEAXEAX;
+//     EmitByte($0f); EmitByte($84); { JZ Value }
+//     JumpTable[CountJumps]:=OutputCodeDataSize+1;
+//     EmitInt32(Value);
+//     LastOutputCodeValue:=locNone;
+//     PC:=PC+1;
+//    end;
+//    OPCall:begin
+//     CountJumps:=CountJumps+1;
+//     EmitByte($e8); { CALL Value }
+//     JumpTable[CountJumps]:=OutputCodeDataSize+1;
+//     EmitInt32(Value);
+//     LastOutputCodeValue:=locNone;
+//     PC:=PC+1;
+//    end;
+//    OPAdjS:begin
+//     Value:=Value*2;
+//     if Value>0 then begin
+//      if (Value>=-128) and (Value<=127) then begin
+//       EmitByte($48); EmitByte($83); EmitByte($c4); EmitByte(Value); { ADD ESP,BYTE Value }
+//      end else begin
+//       EmitByte($48); EmitByte($81); EmitByte($c4); EmitInt32(Value); { ADD ESP,DWORD Value }
+//      end;
+//     end else if Value<0 then begin
+//      Value:=-Value;
+//      if (Value>=-128) and (Value<=127) then begin
+//       EmitByte($48); EmitByte($83); EmitByte($ec); EmitByte(Value); { SUB ESP,BYTE Value }
+//      end else begin
+//       EmitByte($48); EmitByte($81); EmitByte($ec); EmitInt32(Value); { SUB ESP,DWORD Value }
+//      end;
+//     end;
+//     LastOutputCodeValue:=locNone;
+//     PC:=PC+1;
+//    end;
+//    OPExit:begin
+//     Value:=Value-4;
+//     Value:=Value*2;
+//     if Value>0 then begin
+//      {EmitByte($c2); EmitInt16(Value); }{ RET Value }
+//      {add rsp, int16_Value, 0, 0; RET}
+//      EmitByte($c2); EmitInt16(Value);
+//      {EmitByte($48); EmitByte($48); EmitByte($48); EmitByte($48); EmitInt16(Value); EmitInt16(0);
+//      EmitByte($c3);}
+//     end else if Value=0 then begin
+//      EmitByte($c3); { RET }
+//     end else begin
+//      Error(145);
+//     end;
+//     LastOutputCodeValue:=locNone;
+//     PC:=PC+1;
+//    end;
+//   end;
+//   PC:=PC+1;
+//  end;
 
 
-  { Patch jumps + calls }
-  for Index:=1 to CountJumps do begin
- 	Value:=JumpTable[Index];
- 	{jump relative for x64 is limited to 32bit value}
-  	OutputCodePutInt32(Value,(   (   Code[OutputCodeGetInt32(Value)] - Value) - 3));
-  end;
+//   { Patch jumps + calls }
+//   for Index:=1 to CountJumps do begin
+//  	Value:=JumpTable[Index];
+//  	{jump relative for x64 is limited to 32bit value}
+//   	OutputCodePutInt32(Value,(   (   Code[OutputCodeGetInt32(Value)] - Value) - 3));
+//   end;
 
 {	function to it's offset in x64 and x32 mapping }
 { func 	 x64		x32
@@ -2768,57 +2810,88 @@ begin
 	EOLN 	   40		20
 }
 
+  {testing}
+  EmitByte($90);
+  EmitByte($90);
+  EmitByte($90);
+
   {new}
   EmitEndingStub;
 
-  {new}
+  {injecting}
   InjectionSize:=OutputCodeDataSize-EndStubSize-PEEXECodeStart;
 
-  {1}
-  {new}
-  {ElfHdr.e_shoff, 8b}
-  OutputCodePutInt32(OffsElfHdrShoff + $1, 		  ElfHdrShoff_val0 + InjectionSize);
-  OutputCodePutInt32(OffsElfHdrShoff + $1 + $4, 0);
+  {__TEXT}
+  OutputCodePutInt32(OffsSegTextVMSize + $1, 		  ValSegTextVMSize + InjectionSize);
+  OutputCodePutInt32(OffsSegTextFileSize + $1, 		  ValSegTextFileSize + InjectionSize);
+  {__text}
+  OutputCodePutInt32(OffsSectTextSize + $1, 		  ValSectTextSize + InjectionSize);
+  {__DATA}
+  OutputCodePutInt32(OffsSegDataVMAddr + $1, 		  ValSegDataVMAddr + InjectionSize);
+  OutputCodePutInt32(OffsSegDataOffs + $1, 		  ValSegDataOffs + InjectionSize);
+  {__data}
+  OutputCodePutInt32(OffsSectDataVMAddr + $1, 		  ValSectDataVMAddr + InjectionSize);
+  OutputCodePutInt32(OffsSectDataOffs + $1, 		  ValSectDataOffs + InjectionSize);
+  {__LINKEDIT}
+  OutputCodePutInt32(OffsSegLinkVMAddr + $1, 		  ValSegLinkVMAddr + InjectionSize);
+  OutputCodePutInt32(OffsSegLinkOffs + $1, 		  ValSegLinkOffs + InjectionSize);
+  {SYMTAB_OFFSETS}
+  OutputCodePutInt32(OffsSymTabOffs + $1, 		  ValSymTabOffs + InjectionSize);
+  OutputCodePutInt32(OffsStrTabOffs + $1, 		  ValStrTabOffs + InjectionSize);
+  {SYMTAB_DATA}
+  OutputCodePutInt32(OffsData0 + $1, 		  ValData0 + InjectionSize);
+  OutputCodePutInt32(OffsData1 + $1, 		  ValData1 + InjectionSize);
+  OutputCodePutInt32(OffsData2 + $1, 		  ValData2 + InjectionSize);
+  OutputCodePutInt32(OffsData3 + $1, 		  ValData3 + InjectionSize);
+  OutputCodePutInt32(OffsData4 + $1, 		  ValData4 + InjectionSize);
+  OutputCodePutInt32(OffsData5 + $1, 		  ValData5 + InjectionSize);
 
-  {2}
-  {new}
-  {TextPhdr.p_filesz, 4b}
-  OutputCodePutInt32(OffsTextPHdrFilesz + $1, TextPhdrFilesz_val0 + InjectionSize);
+  // {1}
+  // {new}
+  // {ElfHdr.e_shoff, 8b}
+  // OutputCodePutInt32(OffsElfHdrShoff + $1, 		  ElfHdrShoff_val0 + InjectionSize);
+  // OutputCodePutInt32(OffsElfHdrShoff + $1 + $4, 0);
+
+  // {2}
+  // {new}
+  // {TextPhdr.p_filesz, 4b}
+  // OutputCodePutInt32(OffsTextPHdrFilesz + $1, TextPhdrFilesz_val0 + InjectionSize);
 
 
-  {2.5} {TextPhdr.memsz, 4b}
-  OutputCodePutInt32(OffsTextPHdrMemsz + $1, TextPhdrFilesz_val0 + InjectionSize);
+  // {2.5} {TextPhdr.memsz, 4b}
+  // OutputCodePutInt32(OffsTextPHdrMemsz + $1, TextPhdrFilesz_val0 + InjectionSize);
 
-  {3}
-  {new}
-  {TextSectionHdr.size, 8b}
-  {it flows forward as InjectionSize increases}
-  OutputCodePutInt32(OffsTextSectSize + $1 + InjectionSize, 	   TxtSectHdrSize_val0 + InjectionSize);
-  OutputCodePutInt32(OffsTextSectSize + $1 + InjectionSize + $4, 0);
+  // {3}
+  // {new}
+  // {TextSectionHdr.size, 8b}
+  // {it flows forward as InjectionSize increases}
+  // OutputCodePutInt32(OffsTextSectSize + $1 + InjectionSize, 	   TxtSectHdrSize_val0 + InjectionSize);
+  // OutputCodePutInt32(OffsTextSectSize + $1 + InjectionSize + $4, 0);
 
-  {4}
-  {new}
-  {ShstrtabSectionHdr.offs, 8b}
-  OutputCodePutInt32(OffsShstrSectOffs + $1 + InjectionSize, 	    ShSectHdrOffs_val0 + InjectionSize);
-  OutputCodePutInt32(OffsShstrSectOffs + $1 + InjectionSize + $4, 0);
+  // {4}
+  // {new}
+  // {ShstrtabSectionHdr.offs, 8b}
+  // OutputCodePutInt32(OffsShstrSectOffs + $1 + InjectionSize, 	    ShSectHdrOffs_val0 + InjectionSize);
+  // OutputCodePutInt32(OffsShstrSectOffs + $1 + InjectionSize + $4, 0);
 
-  {5}
-  {new}
-  {SymtabSectionHdrOffs.offs, 8b}
-  OutputCodePutInt32(OffsSymtabSectOffs + $1 + InjectionSize, 	   SymSHdrOffs_val0 + InjectionSize);
-  OutputCodePutInt32(OffsSymtabSectOffs + $1 + InjectionSize + $4, 0);
+  // {5}
+  // {new}
+  // {SymtabSectionHdrOffs.offs, 8b}
+  // OutputCodePutInt32(OffsSymtabSectOffs + $1 + InjectionSize, 	   SymSHdrOffs_val0 + InjectionSize);
+  // OutputCodePutInt32(OffsSymtabSectOffs + $1 + InjectionSize + $4, 0);
 
 
-  {6}
-  {new}
-  {StrtabSectHdrOffs.offs, 8b}
-  OutputCodePutInt32(OffsStrtabSectOffs + $1 + InjectionSize, 	   StrSHdrOffs_val0 + InjectionSize);
-  OutputCodePutInt32(OffsStrtabSectOffs + $1 + InjectionSize + $4, 0);
+  // {6}
+  // {new}
+  // {StrtabSectHdrOffs.offs, 8b}
+  // OutputCodePutInt32(OffsStrtabSectOffs + $1 + InjectionSize, 	   StrSHdrOffs_val0 + InjectionSize);
+  // OutputCodePutInt32(OffsStrtabSectOffs + $1 + InjectionSize + $4, 0);
 
  WriteOutputCode;
 end;
 
 begin
+{
  StringCopy(Keywords[SymBEGIN],'BEGIN               ');
  StringCopy(Keywords[SymEND],'END                 ');
  StringCopy(Keywords[SymIF],'IF                  ');
@@ -2932,5 +3005,6 @@ begin
  Block(0);
  EmitOpcode2(OPHalt);
  Check(TokPeriod);
+ }
  AssembleAndLink;
 end.
