@@ -2888,6 +2888,21 @@ begin
   OutputCodePutInt32(OffsStrings0 + $3 + $1, 		  ValString0 + InjectionSize);
   OutputCodePutInt32(OffsStrings1 + $3 + $1, 		  ValString1 + InjectionSize);
   OutputCodePutInt32(OffsStrings2 + $3 + $1, 		  ValString2 + InjectionSize);
+  OutputCodePutInt32(OffsStrings3 + $3 + $1, 		  ValString3 + InjectionSize);
+  OutputCodePutInt32(OffsStrings4 + $3 + $1, 		  ValString4 + InjectionSize);
+  OutputCodePutInt32(OffsStrings5 + $3 + $1, 		  ValString5 + InjectionSize);
+  OutputCodePutInt32(OffsStrings6 + $3 + $1, 		  ValString6 + InjectionSize);
+  OutputCodePutInt32(OffsStrings7 + $3 + $1, 		  ValString7 + InjectionSize);
+  OutputCodePutInt32(OffsStrings8 + $3 + $1, 		  ValString8 + InjectionSize);
+  OutputCodePutInt32(OffsStrings9 + $3 + $1, 		  ValString9 + InjectionSize);
+  OutputCodePutInt32(OffsStrings10 + $3 + $1, 		  ValString10 + InjectionSize);
+  OutputCodePutInt32(OffsStrings11 + $3 + $1, 		  ValString11 + InjectionSize);
+  OutputCodePutInt32(OffsStrings12 + $3 + $1, 		  ValString12 + InjectionSize);
+  OutputCodePutInt32(OffsStrings13 + $3 + $1, 		  ValString13 + InjectionSize);
+  OutputCodePutInt32(OffsStrings14 + $3 + $1, 		  ValString14 + InjectionSize);
+  OutputCodePutInt32(OffsStrings15 + $3 + $1, 		  ValString15 + InjectionSize);
+  OutputCodePutInt32(OffsStrings16 + $3 + $1, 		  ValString16 + InjectionSize);
+  OutputCodePutInt32(OffsStrings17 + $3 + $1, 		  ValString17 + InjectionSize);
   // {1}
   // {new}
   // {ElfHdr.e_shoff, 8b}
