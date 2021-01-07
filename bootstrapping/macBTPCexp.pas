@@ -2853,6 +2853,7 @@ begin
   EmitByte($90);
   EmitByte($90);
   EmitByte($90);
+  EmitByte($90);
 
   {new}
   EmitEndingStub;
@@ -2878,12 +2879,12 @@ begin
   OutputCodePutInt32(OffsSymTabOffs + $1, 		  ValSymTabOffs + InjectionSize);
   OutputCodePutInt32(OffsStrTabOffs + $1, 		  ValStrTabOffs + InjectionSize);
   {SYMTAB_DATA}
-  OutputCodePutInt32(OffsData0 + $3 + $1, 		  ValData0 + InjectionSize);
-  OutputCodePutInt32(OffsData1 + $3 + $1, 		  ValData1 + InjectionSize);
-  OutputCodePutInt32(OffsData2 + $3 + $1, 		  ValData2 + InjectionSize);
-  OutputCodePutInt32(OffsData3 + $3 + $1, 		  ValData3 + InjectionSize);
-  OutputCodePutInt32(OffsData4 + $3 + $1, 		  ValData4 + InjectionSize);
-  OutputCodePutInt32(OffsData5 + $3 + $1, 		  ValData5 + InjectionSize);
+  OutputCodePutInt32(OffsData0 + InjectionSize + $1, 		  ValData0 + InjectionSize);
+  OutputCodePutInt32(OffsData1 + InjectionSize + $1, 		  ValData1 + InjectionSize);
+  OutputCodePutInt32(OffsData2 + InjectionSize + $1, 		  ValData2 + InjectionSize);
+  OutputCodePutInt32(OffsData3 + InjectionSize + $1, 		  ValData3 + InjectionSize);
+  OutputCodePutInt32(OffsData4 + InjectionSize + $1, 		  ValData4 + InjectionSize);
+  OutputCodePutInt32(OffsData5 + InjectionSize + $1, 		  ValData5 + InjectionSize);
   {GOT}
   OutputCodePutInt32(OffsStrings0 + $3 + $1, 		  ValString0 + InjectionSize);
   OutputCodePutInt32(OffsStrings1 + $3 + $1, 		  ValString1 + InjectionSize);
