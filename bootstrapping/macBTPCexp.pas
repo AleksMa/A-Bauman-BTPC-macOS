@@ -2429,7 +2429,7 @@ procedure AssembleAndLink;
 var
    InjectionSize,
    CountJumps,Opcode,Value,Index,PEEXECodeSize,PEEXESectionVirtualSize,
-   PEEXESectionAlignment,PEEXECodeStart:integer;
+   PEEXESectionAlignment,PEEXECodeStart,iter:integer;;
 begin
  EmitStubCode;
  
@@ -2850,7 +2850,6 @@ begin
 }
 
   {testing}
-  var iter:integer;
   for iter:=1 to 1000 do begin
     EmitByte($90);
   end;
