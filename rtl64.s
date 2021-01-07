@@ -570,6 +570,9 @@ ProgramEntryPoint:
     call RTLWriteInteger
     call RTLWriteLn  
     call RTLWriteLn
+    nop
+    nop
+    nop
     call RTLHalt
 
 #------------------------------------------
