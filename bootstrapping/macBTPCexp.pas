@@ -2157,6 +2157,9 @@ const EndingStubSize=5297;
   ValData3=$1076;
   ValData4=$1077;
   ValData5=$10BF;
+  {STRINGS}
+  OffsStrings0=$FDE;
+  ValString0=$68000000;
   // ElfHdrShoff_val0=$4b0;
   // TextPhdrFilesz_val0=$317;
   // TxtSectHdrSize_val0=$317;
@@ -2846,6 +2849,7 @@ begin
   OutputCodePutInt32(OffsData4 + $3 + $1, 		  ValData4 + InjectionSize);
   OutputCodePutInt32(OffsData5 + $3 + $1, 		  ValData5 + InjectionSize);
 
+  OutputCodePutInt32(OffsStrings0 + $4 + $1, 		  ValString0 + InjectionSize);
   // {1}
   // {new}
   // {ElfHdr.e_shoff, 8b}
