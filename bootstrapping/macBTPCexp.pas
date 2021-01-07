@@ -2429,7 +2429,7 @@ procedure AssembleAndLink;
 var
    InjectionSize,
    CountJumps,Opcode,Value,Index,PEEXECodeSize,PEEXESectionVirtualSize,
-   PEEXESectionAlignment,PEEXECodeStart,iter:integer;;
+   PEEXESectionAlignment,PEEXECodeStart,iter:integer;
 begin
  EmitStubCode;
  
