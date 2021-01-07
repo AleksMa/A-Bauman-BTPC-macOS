@@ -2394,7 +2394,7 @@ var
 begin
  EmitStubCode;
  
-//  PEEXECodeStart:=OutputCodeDataSize;
+  PEEXECodeStart:=OutputCodeDataSize;
 //  LastOutputCodeValue:=locNone;
 //  PC:=0;
 //  CountJumps:=0;
