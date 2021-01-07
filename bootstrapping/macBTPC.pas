@@ -2353,9 +2353,6 @@ var
 begin
  EmitStubCode;
 
- EmitByte($90);
- EmitByte($90);
- EmitByte($90);
  { some deleted lines }
 
  {new}
