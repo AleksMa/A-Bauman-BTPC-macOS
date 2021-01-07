@@ -2850,7 +2850,8 @@ begin
 }
 
   {testing}
-  for i:=1 to 1000 do begin
+  var iter:integer;
+  for iter:=1 to 1000 do begin
     EmitByte($90);
   end;
 
