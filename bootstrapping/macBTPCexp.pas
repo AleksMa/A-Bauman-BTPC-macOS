@@ -2850,7 +2850,7 @@ begin
 }
 
   {testing}
-  for iter:=1 to 1000 do begin
+  for iter:=1 to 4096 do begin
     EmitByte($90);
   end;
 
