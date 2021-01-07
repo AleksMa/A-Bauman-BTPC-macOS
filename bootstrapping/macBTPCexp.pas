@@ -2159,13 +2159,42 @@ const EndingStubSize=5297;
   ValData5=$10BF;
   {GOT}
   OffsStrings0=$FDE;
-  ValString0=$00000092;
-  
   OffsStrings1=$CF2;
-  ValString1=$00000307;
-  
   OffsStrings2=$D2A;
+  OffsStrings3=$D5B;
+  OffsStrings4=$D72;
+  OffsStrings5=$D88;
+  OffsStrings6=$DB2;
+  OffsStrings7=$DD9;
+  OffsStrings8=$DEA;
+  OffsStrings9=$DFB;
+  OffsStrings10=$E13;
+  OffsStrings11=$E2F;
+  OffsStrings12=$E72;
+  OffsStrings13=$E83;
+  OffsStrings14=$EA1;
+  OffsStrings15=$EAC;
+  OffsStrings16=$F2A;
+  OffsStrings17=$D9E;
+
+  ValString0=$00000092;
+  ValString1=$00000307;
   ValString2=$000002CF;
+  ValString3=$312;
+  ValString4=$2FD;
+  ValString5=$2E6;
+  ValString6=$2BB;
+  ValString7=$296;
+  ValString8=$283;
+  ValString9=$272;
+  ValString10=$25A;
+  ValString11=$23E;
+  ValString12=$1FD;
+  ValString13=$1EA;
+  ValString14=$1CE;
+  ValString15=$1C1;
+  ValString16=$143;
+  ValString17=$2D0;
 
   // ElfHdrShoff_val0=$4b0;
   // TextPhdrFilesz_val0=$317;
