@@ -2160,7 +2160,7 @@ const EndingStubSize=5297;
   ValData5=$10BF;
   {GOT}
   OffsStrings0=$FF9;
-  OffsStrings1=$D14;
+  OffsStrings1=$D0D;
   OffsStrings2=$D45;
   OffsStrings3=$D76;
   OffsStrings4=$D8D;
