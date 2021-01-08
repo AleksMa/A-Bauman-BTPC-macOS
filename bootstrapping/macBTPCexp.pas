@@ -2849,8 +2849,14 @@ begin
 	EOLN 	   40		20
 }
 
+  EmitByte($90);
+  EmitByte($90);
+
+  {injecting}
+  InjectionSize:=OutputCodeDataSize-PEEXECodeStart;
+
   {testing}
-  for iter:=1 to 2048 do begin
+  for iter:=InjectionSize to 4095 do begin
     EmitByte($90);
   end;
 
