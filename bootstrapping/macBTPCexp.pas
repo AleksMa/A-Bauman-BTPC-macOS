@@ -2856,7 +2856,7 @@ begin
   InjectionSize:=OutputCodeDataSize-PEEXECodeStart;
 
   {testing}
-  for iter:=InjectionSize to 4095 do begin
+  for iter:=(InjectionSize mod 4096) to 4095 do begin
     EmitByte($90);
   end;
 
