@@ -9,7 +9,7 @@ using namespace std;
 
 #define EI_NIDENT (16)
 
-#define PASCAL_STR_LEN_MAX 255
+#define PASCAL_STR_LEN_MAX 20
 
 string NOP = "$90";
 
@@ -323,8 +323,7 @@ int main() {
     myfile.open("/Users/a.mamaev/Work/CourseProject/A-Bauman-BTPC-macOS/rtl2pas/stub.txt");
 
     FILE *f = fopen(
-            //"/Users/a.mamaev/Work/CourseProject/A-Bauman-BTPC-macOS/rtl64",
-            "/Users/a.mamaev/Work/CourseProject/A-Bauman-BTPC-macOS/rtl64",
+            "/Users/a.mamaev/Work/CourseProject/A-Bauman-BTPC-macOS/rtl64macOS",
             "rwb");
 
     if (!f) {

@@ -1,4 +1,4 @@
-# A Bauman BeRo TinyPascal
+# A Bauman BeRo TinyPascal macOS
 
 A ported version of self-hosting capable [BeRo Tiny Pascal Compiler](https://github.com/BeRo1985/berotinypascal) for the macOS 64-bit platform
 
