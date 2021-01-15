@@ -1,0 +1,6 @@
+*.o
+*hello*
+*testing*
+.DS*
+*cmake-build*/
+*.idea*/
