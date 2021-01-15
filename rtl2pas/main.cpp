@@ -286,7 +286,7 @@ int *copyEnding(FILE *f, uint32_t copyFrom) {
 
     //stringList.push_back("  e_shstrndxOffset:=" + to_string(0x3C) + ";");
 
-    myfile << "\n{new}\nprocedure EmitEndingStub;\nbegin\n";
+    myfile << "\nprocedure EmitEndingStub;\nbegin\n";
     for (i = 0; i < stringList.size()/*OutputCodeDataSize / PASCAL_STR_LEN_MAX*/; i++) {
         myfile << stringList[i] << endl;
     }
@@ -296,7 +296,7 @@ int *copyEnding(FILE *f, uint32_t copyFrom) {
 
 void printConst() {
 
-    myfile << "{new}\nconst EndingStubSize=$" << dec << EndingStubSize << ";\n";
+    myfile << "const EndingStubSize=" << dec << EndingStubSize << ";\n";
 
     myfile << "\tStartStubSize=$" << hex << startStubSize << ";\n";
     myfile << "\tEndStubSize=$" << hex << endStubSize << ";\n";
@@ -351,7 +351,7 @@ int main() {
         vector<string> stringList;
         stringList.clear();
 
-        stringList.push_back("{ab}\nprocedure EmitStubCode;\nbegin");
+        stringList.push_back("procedure EmitStubCode;\nbegin");
         stringList.push_back("  OutputCodeDataSize:=0;");
 
         string s = "  OutputCodeString(";

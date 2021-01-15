@@ -230,16 +230,12 @@ RTLWriteInteger:
     
     popq %rcx
     
-    #invoke WriteFile (look at WriteChar)
-    #pushall
-    movq $0x2000004,    %rax                    #syscall
-    movq $1,    %rdi                    #param1, fd
-    movq RTLWriteIntegerBuffer@GOTPCREL(%rip),  %rsi  #p2, buf
-    # movq $RTLWriteIntegerBuffer,  %rsi  #p2, buf
-    movq %rcx,  %rdx                    #p3, count
+    movq $0x2000004,    %rax                            # syscall 4 == Write
+    movq $1,            %rdi                            # p1, write_to == 1 == stdout
+    movq RTLWriteIntegerBuffer@GOTPCREL(%rip),  %rsi    # p2, write_from == buf addr
+    movq %rcx,          %rdx                            # p3, count
 
     syscall
-    #popall
 
     
     #popq %rbp
