@@ -7,14 +7,21 @@ A ported version of self-hosting capable [BeRo Tiny Pascal Compiler](https://git
 ### Basic compiler usage
 
 ```bash
-btpc64 < myProgram.pas > myProgram
+btpc64macOS < myProgram.pas > myProgram
+```
+
+### Bootstapping
+
+```bash
+btpc64macOS < btpc64macOS.pas > btpc64macOSCheck
+diff btpc64macOS btpc64macOSCheck
 ```
 
 ### Runtime reassemble
 
 ```bash
-gcc -c rtl64.s
-ld rtl64.o -g -o rtl64 -T linkerScript.ld -nostdlib
+as rtl64.s -o rtl64.o
+ld rtl64.o -e _main -o rtl64 -lSystem
 ```
      
 ## Porting notes
