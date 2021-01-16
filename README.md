@@ -2,6 +2,15 @@
 
 A ported version of self-hosting capable [BeRo Tiny Pascal Compiler](https://github.com/BeRo1985/berotinypascal) for the macOS 64-bit platform
 
+## Details
+
+* `rtl64macOS.s` - RTL asm source file for macOS
+* `btpc64macOS.pas` - compiler source code on Pascal
+* `btpc64macOS` - Mach-O compiler executable
+* `/bootstrapping/btpc64macOSCrossLinux` - ELF crosscompiler executable (Pascal -> Mach-O)
+* `/bootstrapping/tests/` - simple programs for testing compiler and crosscompiler
+* `/rtl2pas/` - RTL Mach-O executable & parsing cpp script
+
 ## How-to-use
 
 ### Basic compiler usage
@@ -17,7 +26,7 @@ btpc64macOS < btpc64macOS.pas > btpc64macOSCheck
 diff btpc64macOS btpc64macOSCheck
 ```
 
-### Runtime reassemble
+### RTL reassemble
 
 ```bash
 as rtl64.s -o rtl64.o
