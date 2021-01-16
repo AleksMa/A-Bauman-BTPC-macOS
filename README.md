@@ -37,6 +37,6 @@ ld rtl64.o -e _main -o rtl64 -lSystem
 
 macOS 64-bit porting author - [Alexey Mamaev](https://github.com/AleksMa).
 
-Linux 64-bit porting author - [Anthony Belyaev](https://github.com/avbelyaev).
+[Linux 64-bit](https://github.com/bmstu-iu9/A-Bauman-BTPC-64) porting author - [Anthony Belyaev](https://github.com/avbelyaev).
 
 Original BTPC author - [Benjamin Rosseaux](https://github.com/BeRo1985).
