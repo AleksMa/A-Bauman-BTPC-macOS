@@ -1,19 +1,16 @@
-#include <iostream>
-#include <vector>
-#include <fstream>
 #include <cstring>
+#include <fstream>
+#include <iostream>
 #include <stdint.h>
 #include <stdlib.h>
-
-using namespace std;
+#include <vector>
 
 #define EI_NIDENT (16)
-
 #define PASCAL_STR_LEN_MAX 20
 
-string NOP = "$90";
+const std::string NOP = "$90";
 
-ofstream myfile;
+std::ofstream myfile;
 
 int OutputCodeDataSize;
 int startStubSize;
@@ -23,14 +20,13 @@ uint32_t endingOffset = 0x1000;
 
 int EndingStubSize;
 
-vector<int> fileEntrails;
-vector<int> endingEntrails;
+std::vector<int> fileEntrails;
+std::vector<int> endingEntrails;
 
 #include <mach/machine.h>
 #include <mach/vm_prot.h>
 #include <mach/machine/thread_status.h>
 #include <architecture/byte_order.h>
-
 
 struct mach_header {
     uint32_t magic;          // mach magic number
@@ -95,7 +91,7 @@ struct load_command {
 #define LC_VERSION_MIN_MACOSX 0x24   /* build for MacOSX min OS version */
 #define LC_VERSION_MIN_IPHONEOS 0x25 /* build for iPhoneOS min OS version */
 #define LC_FUNCTION_STARTS 0x26 /* compressed table of function start addresses */
-#define LC_DYLD_ENVIRONMENT 0x27 /* string for dyld to treat
+#define LC_DYLD_ENVIRONMENT 0x27 /* std::string for dyld to treat
 				    like environment variable */
 #define LC_MAIN (0x28|LC_REQ_DYLD) /* replacement for LC_UNIXTHREAD */
 #define LC_DATA_IN_CODE 0x29 /* table of non-instructions in __text */
@@ -134,8 +130,8 @@ struct section_64 {
 struct symtab_command {
     uint32_t symoff;        /* symbol table offset */
     uint32_t nsyms;        /* number of symbol table entries */
-    uint32_t stroff;        /* string table offset */
-    uint32_t strsize;    /* string table size in bytes */
+    uint32_t stroff;        /* std::string table offset */
+    uint32_t strsize;    /* std::string table size in bytes */
 };
 
 struct uuid_command {
@@ -153,77 +149,77 @@ struct custom_thread_command {
 };
 
 mach_header MachHeader;
-vector<load_command> load_commands;
+std::vector<load_command> load_commands;
 
 void findSectionHeaders(FILE *f) {
 
     rewind(f);
     fread(&MachHeader, 1, sizeof(MachHeader), f);
-    cout << "MachOHeaderSize: " << hex << sizeof(MachHeader) << endl;
+    std::cout << "MachOHeaderSize: " << std::hex << sizeof(MachHeader) << std::endl;
 
-    cout << "magic: " << hex << MachHeader.magic << endl;
-    cout << "filetype: " << hex << MachHeader.filetype << endl;
-    cout << "ncmds: " << hex << MachHeader.ncmds << endl;
-    cout << "sizeofcmds: " << hex << MachHeader.sizeofcmds << endl;
+    std::cout << "magic: " << std::hex << MachHeader.magic << std::endl;
+    std::cout << "filetype: " << std::hex << MachHeader.filetype << std::endl;
+    std::cout << "ncmds: " << std::hex << MachHeader.ncmds << std::endl;
+    std::cout << "sizeofcmds: " << std::hex << MachHeader.sizeofcmds << std::endl;
 
-    cout << endl << endl;
+    std::cout << std::endl << std::endl;
 
-    load_commands = vector<load_command>(MachHeader.ncmds);
+    load_commands = std::vector<load_command>(MachHeader.ncmds);
 
     for (int i = 0; i < MachHeader.ncmds; ++i) {
-        fread(&load_commands[i], 1, sizeof(load_commands[i]), f);
+        std::fread(&load_commands[i], 1, sizeof(load_commands[i]), f);
 
-        cout << "Load commands: " << endl;
-        cout << "cmd: " << hex << load_commands[i].cmd << endl;
-        cout << "cmd_size: " << hex << load_commands[i].cmdsize << endl;
+        std::cout << "Load commands: " << std::endl;
+        std::cout << "cmd: " << std::hex << load_commands[i].cmd << std::endl;
+        std::cout << "cmd_size: " << std::hex << load_commands[i].cmdsize << std::endl;
 
         if (load_commands[i].cmd == LC_SEGMENT_64) {
             segment_command_64 SC;
             fread(&SC, 1, sizeof(SC), f);
-            cout << "Segment Command: " << endl;
-            cout << "name: " << hex << SC.segname << endl;
-            cout << "vmaddr: " << hex << SC.vmaddr << endl;
-            cout << "vmsize: " << hex << SC.vmsize << endl;
-            cout << "offset: " << hex << SC.fileoff << endl;
-            cout << "size: " << hex << SC.filesize << endl;
-            cout << "sections: " << hex << SC.nsects << endl;
+            std::cout << "Segment Command: " << std::endl;
+            std::cout << "name: " << std::hex << SC.segname << std::endl;
+            std::cout << "vmaddr: " << std::hex << SC.vmaddr << std::endl;
+            std::cout << "vmsize: " << std::hex << SC.vmsize << std::endl;
+            std::cout << "offset: " << std::hex << SC.fileoff << std::endl;
+            std::cout << "size: " << std::hex << SC.filesize << std::endl;
+            std::cout << "sections: " << std::hex << SC.nsects << std::endl;
 
-            cout << endl << "Sections: " << endl;
+            std::cout << std::endl << "Sections: " << std::endl;
             for (int j = 0; j < SC.nsects; ++j) {
                 section_64 Section;
                 fread(&Section, 1, sizeof(Section), f);
-                cout << "section: " << Section.sectname << endl;
-                cout << "addr: " << hex << Section.addr << endl;
-                cout << "size: " << hex << Section.size << endl;
-                cout << "offset: " << hex << Section.offset << endl;
-                cout << "align: " << hex << Section.align << endl;
+                std::cout << "section: " << Section.sectname << std::endl;
+                std::cout << "addr: " << std::hex << Section.addr << std::endl;
+                std::cout << "size: " << std::hex << Section.size << std::endl;
+                std::cout << "offset: " << std::hex << Section.offset << std::endl;
+                std::cout << "align: " << std::hex << Section.align << std::endl;
             }
         } else if (load_commands[i].cmd == LC_SYMTAB) {
             symtab_command SYMTAB;
             fread(&SYMTAB, 1, sizeof(SYMTAB), f);
-            cout << "Symtab command:" << endl;
-            cout << "symoff: " << hex << SYMTAB.symoff << endl;
-            cout << "nsyms: " << hex << SYMTAB.nsyms << endl;
-            cout << "stroff: " << hex << SYMTAB.stroff << endl;
-            cout << "strsize: " << hex << SYMTAB.strsize << endl;
+            std::cout << "Symtab command:" << std::endl;
+            std::cout << "symoff: " << std::hex << SYMTAB.symoff << std::endl;
+            std::cout << "nsyms: " << std::hex << SYMTAB.nsyms << std::endl;
+            std::cout << "stroff: " << std::hex << SYMTAB.stroff << std::endl;
+            std::cout << "strsize: " << std::hex << SYMTAB.strsize << std::endl;
         } else if (load_commands[i].cmd == LC_UUID) {
             uuid_command UUID;
             fread(&UUID, 1, sizeof(UUID), f);
-            cout << "UUID command:" << endl;
-            cout << "uuid: " << hex << UUID.uuid << endl;
+            std::cout << "UUID command:" << std::endl;
+            std::cout << "uuid: " << std::hex << UUID.uuid << std::endl;
         } else if (load_commands[i].cmd == LC_SOURCE_VERSION) {
             source_version_command SVC;
             fread(&SVC, 1, sizeof(SVC), f);
-            cout << "Source version command:" << endl;
-            cout << "version: " << SVC.version << endl;
+            std::cout << "Source version command:" << std::endl;
+            std::cout << "version: " << SVC.version << std::endl;
         } else if (load_commands[i].cmd == LC_UNIXTHREAD) {
             custom_thread_command SVC;
             fread(&SVC, 1, sizeof(SVC), f);
-            cout << "Thread command:" << endl;
-            cout << "flavor: " << SVC.flavor << endl;
-            cout << "count: " << SVC.count << endl;
+            std::cout << "Thread command:" << std::endl;
+            std::cout << "flavor: " << SVC.flavor << std::endl;
+            std::cout << "count: " << SVC.count << std::endl;
         }
-        cout << endl << endl;
+        std::cout << std::endl << std::endl;
     }
 
     return;
@@ -246,10 +242,10 @@ int *copyEnding(FILE *f, uint32_t copyFrom) {
 
 
     int i = 0;
-    string one("-1");
-    string s = "  OutputCodeString(";
+    std::string one("-1");
+    std::string s = "  OutputCodeString(";
     int bytesInString = 0;
-    vector<string> stringList;
+    std::vector<std::string> stringList;
 
     endStubSize = 0;
     while (i < size - 1) {
@@ -263,9 +259,8 @@ int *copyEnding(FILE *f, uint32_t copyFrom) {
         }
 
         int singleByte = endingEntrails[i];
-        //if (0 == one.compare(to_string(singleByte))) cout << singleByte << endl;
 
-        s += "#" + to_string(singleByte);
+        s += "#" + std::to_string(singleByte);
 
         bytesInString++;
         i++;
@@ -281,14 +276,11 @@ int *copyEnding(FILE *f, uint32_t copyFrom) {
     s += ");";
 
     stringList.push_back(s);
-    //stringList.push_back("  EndingStubSize:=" + to_string(size) + ";");
     stringList.push_back("end;\n");
 
-    //stringList.push_back("  e_shstrndxOffset:=" + to_string(0x3C) + ";");
-
     myfile << "\nprocedure EmitEndingStub;\nbegin\n";
-    for (i = 0; i < stringList.size()/*OutputCodeDataSize / PASCAL_STR_LEN_MAX*/; i++) {
-        myfile << stringList[i] << endl;
+    for (i = 0; i < stringList.size(); i++) {
+        myfile << stringList[i] << std::endl;
     }
 
     return NULL;
@@ -296,10 +288,10 @@ int *copyEnding(FILE *f, uint32_t copyFrom) {
 
 void printConst() {
 
-    myfile << "const EndingStubSize=" << dec << EndingStubSize << ";\n";
+    myfile << "const EndingStubSize=" << std::dec << EndingStubSize << ";\n";
 
-    myfile << "\tStartStubSize=$" << hex << startStubSize << ";\n";
-    myfile << "\tEndStubSize=$" << hex << endStubSize << ";\n";
+    myfile << "\tStartStubSize=$" << std::hex << startStubSize << ";\n";
+    myfile << "\tEndStubSize=$" << std::hex << endStubSize << ";\n";
 }
 
 bool isExecutable(FILE *f) {
@@ -320,40 +312,35 @@ bool isExecutable(FILE *f) {
 
 int main() {
 
-    myfile.open("/Users/a.mamaev/Work/CourseProject/A-Bauman-BTPC-macOS/rtl2pas/stub.txt");
+    myfile.open("stub.txt");
 
-    FILE *f = fopen(
-            "/Users/a.mamaev/Work/CourseProject/A-Bauman-BTPC-macOS/rtl64macOS",
-            "rwb");
+    FILE *f = fopen("rtl64macOS", "rwb");
 
     if (!f) {
-        cout << "couldnt open file" << endl;
+        std::cout << "could not open file" << std::endl;
         return -1;
     }
 
     if (isExecutable(f)) {
         rewind(f);
 
-        cout << "\nLooking up for section headers:" << endl;
+        std::cout << "\nLooking up for section headers:" << std::endl;
         findSectionHeaders(f);
 
-
-        //scan all
         rewind(f);
         while (!feof(f)) {
             fileEntrails.push_back(fgetc(f));
         }
-        cout << "OverallBytes:=" << fileEntrails.size() << endl;
-
+        std::cout << "OverallBytes:=" << fileEntrails.size() << std::endl;
 
         rewind(f);
-        vector<string> stringList;
+        std::vector<std::string> stringList;
         stringList.clear();
 
         stringList.push_back("procedure EmitStubCode;\nbegin");
         stringList.push_back("  OutputCodeDataSize:=0;");
 
-        string s = "  OutputCodeString(";
+        std::string s = "  OutputCodeString(";
         int singleByte;
 
         int bytesInString = 0;
@@ -370,7 +357,7 @@ int main() {
             }
 
             singleByte = fgetc(f);
-            s += "#" + to_string(singleByte);
+            s += "#" + std::to_string(singleByte);
 
             bytesInString++;
             OutputCodeDataSize++;
@@ -386,24 +373,19 @@ int main() {
         s += ");";
 
         stringList.push_back(s);
-        stringList.push_back("  OutputCodeDataSize:=" + to_string(OutputCodeDataSize) + ";");
+        stringList.push_back("  OutputCodeDataSize:=" + std::to_string(OutputCodeDataSize) + ";");
         stringList.push_back("end;");
 
         for (int i = 0; i < stringList.size()/*OutputCodeDataSize / PASCAL_STR_LEN_MAX + 1 + 2*/; i++) {
 
-            myfile << stringList[i] << endl;
+            myfile << stringList[i] << std::endl;
         }
-
-
-        //EmitEndingCode
 
         int *ending = copyEnding(f, endingOffset);
 
-
         printConst();
-
     } else {
-        cout << "file is not of ELF format" << endl;
+        std::cout << "file is not of ELF format" << std::endl;
     }
 
     myfile.close();
